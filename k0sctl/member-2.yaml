@@ -1,0 +1,26 @@
+apiVersion: k0sctl.k0sproject.io/v1beta1
+kind: Cluster
+metadata:
+  name: member-2
+spec:
+  hosts:
+    - role: single
+      ssh:
+        address: ${MEMBER_2_PUBLIC_IP}
+        user: root
+        port: 22
+        keyPath: ${SSH_PRIVATE_KEY}
+  k0s:
+    config:
+      apiVersion: k0s.k0sproject.io/v1beta1
+      kind: ClusterConfig
+      metadata:
+        name: member-2
+      spec:
+        api:
+          externalAddress: ${MEMBER_2_PUBLIC_IP}
+          sans:
+            - ${MEMBER_2_PUBLIC_IP}
+  options:
+    wait:
+      enabled: true

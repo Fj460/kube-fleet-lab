@@ -1,0 +1,6 @@
+# Copy to terraform.tfvars and edit. Never commit terraform.tfvars.
+region         = "nyc3"
+image          = "ubuntu-24-04-x64"
+name_prefix    = "k8s-fleet-lab"
+ssh_key_ids    = ["**"]
+admin_ip_cidrs = ["**/32"]

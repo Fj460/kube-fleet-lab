@@ -1,0 +1,26 @@
+apiVersion: k0sctl.k0sproject.io/v1beta1
+kind: Cluster
+metadata:
+  name: fleet-hub
+spec:
+  hosts:
+    - role: single
+      ssh:
+        address: ${HUB_PUBLIC_IP}
+        user: root
+        port: 22
+        keyPath: ${SSH_PRIVATE_KEY}
+  k0s:
+    config:
+      apiVersion: k0s.k0sproject.io/v1beta1
+      kind: ClusterConfig
+      metadata:
+        name: fleet-hub
+      spec:
+        api:
+          externalAddress: ${HUB_PUBLIC_IP}
+          sans:
+            - ${HUB_PUBLIC_IP}
+  options:
+    wait:
+      enabled: true

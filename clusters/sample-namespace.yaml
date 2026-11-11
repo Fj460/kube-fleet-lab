@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: fleet-demo
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: fleet-demo-config
+  namespace: fleet-demo
+data:
+  message: "Hello from the KubeFleet hub"
+  managed-by: "ClusterResourcePlacement"

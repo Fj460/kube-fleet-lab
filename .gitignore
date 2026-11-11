@@ -1,0 +1,10 @@
+# Secrets and generated infrastructure state
+terraform/terraform.tfvars
+terraform/*.tfstate
+terraform/*.tfstate.*
+terraform/.terraform/
+terraform/crash.log
+terraform/plan.out
+.generated/
+.env
+.DS_Store
