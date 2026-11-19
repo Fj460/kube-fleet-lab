@@ -1,22 +1,22 @@
 output "droplets" {
-  description = "Public and VPC-private addresses for each lab node."
+  description = "Infrastructure details indexed by logical cluster name."
+
   value = {
-    for name, node in digitalocean_droplet.node : name => {
+    for name, node in digitalocean_droplet.cluster : name => {
       public_ip  = node.ipv4_address
       private_ip = node.ipv4_address_private
       id         = node.id
       size       = node.size
+      region     = node.region
     }
   }
 }
 
-output "hub_public_ip" {
-  value = digitalocean_droplet.node["fleet-hub"].ipv4_address
-}
+output "cluster_public_ips" {
+  description = "Public IPs indexed by logical cluster name."
 
-output "member_public_ips" {
   value = {
-    for name, node in digitalocean_droplet.node : name => node.ipv4_address
-    if startswith(name, "member-")
+    for name, node in digitalocean_droplet.cluster :
+    name => node.ipv4_address
   }
 }

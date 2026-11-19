@@ -1,6 +1,26 @@
 # Copy to terraform.tfvars and edit. Never commit terraform.tfvars.
-region         = "nyc3"
-image          = "ubuntu-24-04-x64"
+image = "ubuntu-24-04-x64"
+
+clusters = {
+  "fleet-hub" = {
+    region = "ams3"
+    cidr   = "10.31.0.0/20"
+    size   = "s-2vcpu-4gb-intel"
+  }
+
+  "member-1" = {
+    region = "nyc3"
+    cidr   = "10.23.0.0/20"
+    size   = "s-2vcpu-4gb"
+  }
+
+  "member-2" = {
+    region = "sgp1"
+    cidr   = "10.22.0.0/20"
+    size   = "s-2vcpu-4gb"
+  }
+}
+tags           = []
 name_prefix    = "k8s-fleet-lab"
-ssh_key_ids    = ["**"]
-admin_ip_cidrs = ["**/32"]
+ssh_key_ids    = ["****"]
+admin_ip_cidrs = ["**"]

@@ -8,3 +8,8 @@ terraform/plan.out
 .generated/
 .env
 .DS_Store
+terraform/terraform-state-backup.json
+*.tfplan
+*.tfstate
+*.tfstate.*
+.terraform/

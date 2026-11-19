@@ -1,46 +1,38 @@
+
 locals {
   common_tags = distinct(concat(["k8s-fleet-lab"], var.tags))
-
-  nodes = {
-    fleet-hub = {
-      size = "s-2vcpu-4gb"
-    }
-    member-1 = {
-      size = "s-1vcpu-2gb"
-    }
-    member-2 = {
-      size = "s-1vcpu-2gb"
-    }
-  }
 }
 
-resource "digitalocean_vpc" "lab" {
-  name     = "${var.name_prefix}-vpc"
-  region   = var.region
-  ip_range = "10.20.0.0/20"
+resource "digitalocean_vpc" "cluster" {
+  for_each = var.clusters
+
+  name     = "k8s-${each.key}-vpc"
+  region   = each.value.region
+  ip_range = each.value.cidr
 }
 
-resource "digitalocean_droplet" "node" {
-  for_each = local.nodes
+resource "digitalocean_droplet" "cluster" {
+  for_each = var.clusters
 
   name     = "${var.name_prefix}-${each.key}"
-  region   = var.region
+  region   = each.value.region
   size     = each.value.size
   image    = var.image
-  vpc_uuid = digitalocean_vpc.lab.id
+  vpc_uuid = digitalocean_vpc.cluster[each.key].id
   ssh_keys = var.ssh_key_ids
   tags     = local.common_tags
 
   monitoring = true
-
-  lifecycle {
-    create_before_destroy = false
-  }
 }
 
-resource "digitalocean_firewall" "lab" {
-  name        = "${var.name_prefix}-firewall"
-  droplet_ids = [for node in digitalocean_droplet.node : node.id]
+resource "digitalocean_firewall" "cluster" {
+  for_each = var.clusters
+
+  name = "${var.name_prefix}-${each.key}-firewall"
+
+  droplet_ids = [
+    digitalocean_droplet.cluster[each.key].id
+  ]
 
   inbound_rule {
     protocol         = "tcp"
@@ -48,18 +40,10 @@ resource "digitalocean_firewall" "lab" {
     source_addresses = var.admin_ip_cidrs
   }
 
-  # Admin laptop can access each cluster API. Member agents can access the
-  # hub API because they carry the k8s-fleet-lab tag.
   inbound_rule {
     protocol         = "tcp"
     port_range       = "6443"
     source_addresses = var.admin_ip_cidrs
-  }
-
-  inbound_rule {
-    protocol    = "tcp"
-    port_range  = "6443"
-    source_tags = local.common_tags
   }
 
   outbound_rule {
